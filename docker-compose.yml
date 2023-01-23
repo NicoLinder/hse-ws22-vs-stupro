@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+
+  db:
+    container_name: postgres
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=stupro_store
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=3tAu9g1LxS11!02y
+    ports:
+      - '5432:5432'
+    volumes:
+      - "./src/main/resources/schema.sql:/docker-entrypoint-initdb.d/1.sql"
+      - "./src/main/resources/data.sql:/docker-entrypoint-initdb.d/2.sql"
+      - db:/var/lib/postgres
+
+  consul:
+    container_name: consul
+    image: consul
+    restart: unless-stopped
+    ports:
+      - '8500:8500'
+      - '8501:8501'
+      - '8600:8600'
+    command:
+      - agent
+      - -dev
+      - -ui
+      - -client=0.0.0.0
+      - -bind=0.0.0.0
+      - '--https-port=8501'
+
+  service-1:
+    container_name: order_service_1
+    image: quarkus/service-jvm
+    restart: unless-stopped
+    environment:
+      QUARKUS_HTTP_PORT: 8080
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/stupro_store
+      CONSUL_HOST: consul
+      SERVICE_ADDRESS: service-1
+    depends_on:
+      - consul
+      - db
+
+  service-2:
+    container_name: order_service_2
+    image: quarkus/service-jvm
+    restart: unless-stopped
+    environment:
+      QUARKUS_HTTP_PORT: 8081
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/stupro_store
+      CONSUL_HOST: consul
+      SERVICE_ADDRESS: service-2
+    depends_on:
+      - consul
+      - db
+
+  client:
+    container_name: client
+    image: quarkus/client-jvm
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      - QUARKUS_STORK_ORDER_SERVICE_SERVICE_DISCOVERY_CONSUL_HOST=consul
+    depends_on:
+      - consul
+
+volumes:
+  db:
