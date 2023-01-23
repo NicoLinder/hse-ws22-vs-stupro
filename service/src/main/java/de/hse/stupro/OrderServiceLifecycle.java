@@ -45,7 +45,7 @@ public class OrderServiceLifecycle {
             HealthClient healthClient = consulClient.healthClient();
             List<ServiceHealth> instances = healthClient
                     .getHealthyServiceInstances(appName).getResponse();
-            instanceId = appName + "-" + instances.size();
+            instanceId = appName + "-" + servicePort;
             ImmutableRegistration registration = ImmutableRegistration.builder()
                     .id(instanceId)
                     .name(appName)
