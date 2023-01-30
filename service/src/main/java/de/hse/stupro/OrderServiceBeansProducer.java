@@ -16,6 +16,7 @@ public class OrderServiceBeansProducer {
     @ConfigProperty(name = "consul.port")
     String consulPort;
 
+    // Trying to use the config properties instead of hard coded values here results in NullPointerException
     @Produces
     Consul consulClient = Consul.builder().withHostAndPort(HostAndPort.fromParts("consul", 8500)).build();
 
