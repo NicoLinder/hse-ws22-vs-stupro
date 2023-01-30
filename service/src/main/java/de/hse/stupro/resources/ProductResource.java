@@ -10,7 +10,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/products")
 public class ProductResource {
@@ -30,7 +29,7 @@ public class ProductResource {
         List<Product> productsInStock = allProducts.stream().filter(product -> product.getStock() > 0).toList();
 
         // Apply the configured discount
-        int modifier = (100 - Integer.parseInt(discountPercent)) / 100;
+        double modifier = (100 - Integer.parseInt(discountPercent)) / 100.0;
         productsInStock.forEach(product -> product.setPrice(product.getPrice() * modifier));
         return productsInStock;
     }

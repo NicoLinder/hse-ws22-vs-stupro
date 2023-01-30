@@ -41,6 +41,7 @@ services:
       QUARKUS_HTTP_PORT: 8080
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/stupro_store
       CONSUL_HOST: consul
+      QUARKUS_CONSUL_CONFIG_AGENT_HOST_PORT: consul:8500
       SERVICE_ADDRESS: service-1
     depends_on:
       - consul
@@ -54,6 +55,7 @@ services:
       QUARKUS_HTTP_PORT: 8081
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://db:5432/stupro_store
       CONSUL_HOST: consul
+      QUARKUS_CONSUL_CONFIG_AGENT_HOST_PORT: consul:8500
       SERVICE_ADDRESS: service-2
     depends_on:
       - consul
@@ -64,7 +66,7 @@ services:
     image: quarkus/client-jvm
     restart: unless-stopped
     ports:
-      - '8080:8080'
+      - '8090:8090'
     environment:
       - QUARKUS_STORK_ORDER_SERVICE_SERVICE_DISCOVERY_CONSUL_HOST=consul
     depends_on:
